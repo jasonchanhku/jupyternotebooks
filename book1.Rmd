@@ -1,0 +1,105 @@
+---
+title: "My First Machine Learning Project"
+output: html_document
+---
+
+#Dataset & Objective
+I will be using one the most classic dataset, which is iris. This dataset gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are **Iris setosa, versicolor, and virginica.**
+
+iris is a data frame with 150 cases (rows) and 5 variables (columns) named **Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, and Species.**
+
+Features used will be **Sepal.Length, Sepal.Width, Petal.Length, Petal.Width** and the target variable is **Species**
+
+
+##Libraries
+I imported the following libraries to carry out the analysis
+```{r, echo=TRUE}
+library(class) # to carry out KNN
+library(gmodels) # to check model accuracy
+library(ggvis) # for better visualization
+```
+
+# Data Overview
+This is what the iris data.frame table looks like (partial):
+```{r, echo=FALSE}
+head(iris)
+```
+
+Summary statistics of data:
+```{r, echo=FALSE}
+summary(iris)
+```
+
+## Scatterplots
+Scatter plots will enable us to see the correlation of the data from a high level
+```{r, echo=FALSE}
+iris %>% ggvis(~Sepal.Length, ~Sepal.Width, fill = ~Species) %>% layer_points()
+```
+There is a rather high positive correlation for setosa compared to versicolor and virginica when it comes to its sepal length and width.
+
+```{r, echo=FALSE}
+iris %>% ggvis(~Petal.Length, ~Petal.Width, fill = ~Species) %>% layer_points()
+
+```
+
+However, for petal length and width, all 3 species have pretty high positive correlation
+
+# Training and Test Data
+I will use the training set to train the system and the test set to evaluate and test the trained system. The ratio of training to test set i will use is 1:3.
+
+##Training data:
+
+```{r, echo=FALSE}
+set.seed(1234)
+ind <- sample(2, nrow(iris), replace=TRUE, prob=c(0.67, 0.33))
+
+iris.training <- iris[ind==1, 1:4]
+iris.test <- iris[ind==2, 1:4] 
+
+head(iris.training)
+```
+
+##Test data:
+```{r, echo=FALSE}
+head(iris.test)
+```
+
+##Class Labels:
+The class labels contain the target variable for the training and test data.
+
+###Training Labels:
+```{r, echo=FALSE}
+iris.trainLabels <- iris[ind==1, 5]
+iris.testLabels <- iris[ind==2, 5]
+
+head(iris.trainLabels)
+```
+
+###Test Labels:
+```{r, echo=FALSE}
+head(iris.trainLabels)
+```
+
+# Building the Classifer
+The machine learning algorithm i will be using is **K Nearest Neighbour** to classify the test data for our target variable, Species. The parameter k used here is 3.
+
+```{r}
+iris_pred <- knn(train = iris.training, test = iris.test, cl = iris.trainLabels, k=3)
+iris_pred
+```
+
+##Comparing the Outcomes
+Here is where I compare the model's performance on the predicted species to the observed Species.
+```{r, echo=FALSE}
+result <- data.frame(iris.testLabels,iris_pred)
+result
+```
+Seems like the model managed to predict everything correct except for one entry on the 29th row.
+
+##Cross Tabulation Table
+Cross tabulation table helps understand the relationship between the observed and predicted species.
+```{r, echo=FALSE}
+CrossTable(x = iris.testLabels, y = iris_pred, prop.chisq=FALSE)
+```
+
+
