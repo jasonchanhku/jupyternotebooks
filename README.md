@@ -1,2 +1,2 @@
 # jupyternotebooks
-Interesting pet projects of my own
+Interesting Python pet projects of my own
